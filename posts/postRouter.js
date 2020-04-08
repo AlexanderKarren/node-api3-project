@@ -11,7 +11,11 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  // do your magic!
+  Blogs.getById(req.params.id).then(response => {
+    if (response) res.status(200).json(response);
+    else res.status(404).json({ errorMessage: `Could not find post with id ${req.params.id}`})
+  })
+  .catch(error => res.status(500).json({ errorMessage: "Could not access data" }))
 });
 
 router.delete('/:id', (req, res) => {
