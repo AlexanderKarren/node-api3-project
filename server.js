@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 
 const postRouter = require('./posts/postRouter.js');
 const userRouter = require('./users/userRouter.js')
@@ -8,6 +9,7 @@ const server = express();
 server.use(logger);
 
 server.use(express.json()); // built-in middleware
+server.use(cors())
 
 server.use('/api/users', userRouter);
 server.use('/api/posts', postRouter);
