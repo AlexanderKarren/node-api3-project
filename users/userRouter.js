@@ -1,6 +1,7 @@
 const express = require('express');
 
 const Users = require('./userDb.js')
+const Blogs = require('../posts/postDb.js')
 
 const router = express.Router();
 
@@ -9,8 +10,12 @@ router.post('/', validateUser, (req, res) => {
   .catch(error => res.status(500).json({ errorMessage: "Could not access data"}))
 });
 
-router.post('/:id/posts', validateUserId, (req, res) => {
-  // do your magic!
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+  Blogs.insert({
+    text: req.body.text,
+    user_id: req.params.id,
+  }).then(response => res.status(201).json(response))
+  .catch(error => res.status(500).json({ errorMessage: "Could not access data"}))
 });
 
 router.get('/', (req, res) => {
@@ -24,7 +29,8 @@ router.get('/:id', validateUserId, (req, res) => {
 });
 
 router.get('/:id/posts', validateUserId, (req, res) => {
-  // do your magic!
+  Users.getUserPosts(req.params.id).then(response => res.status(200).json(response))
+  .catch(error => res.status(500).json({ errorMessage: "Could not access data"}))
 });
 
 router.delete('/:id', validateUserId, (req, res) => {
@@ -33,7 +39,8 @@ router.delete('/:id', validateUserId, (req, res) => {
 });
 
 router.put('/:id', validateUserId, (req, res) => {
-  // do your magic!
+  Users.update(req.params.id, req.body).then(response => res.status(200).json(response))
+  .catch(error => res.status(500).json({ errorMessage: "Could not access data" }))
 });
 
 //custom middleware
@@ -51,11 +58,15 @@ function validateUser(req, res, next) {
     if (req.body.hasOwnProperty("name")) next();
     else res.status(400).json({ errorMessage: "Body missing 'name' attribute" })
   }
-  else res.status(400).json({ errorMessage: "Body missing" })
+  else res.status(400).json({ errorMessage: "Body data missing" })
 }
 
 function validatePost(req, res, next) {
-  // do your magic!
+  if (req.body) {
+    if (req.body.hasOwnProperty("text")) next();
+    else res.status(400).json({ errorMessage: "Body missing 'text' attribute" })
+  }
+  else res.status(400).json({ errorMessage: "Body data missing" })
 }
 
 module.exports = router;
