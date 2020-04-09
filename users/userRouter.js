@@ -1,39 +1,46 @@
 const express = require('express');
 
+const Users = require('./userDb.js')
+
 const router = express.Router();
 
 router.post('/', (req, res) => {
   // do your magic!
 });
 
-router.post('/:id/posts', (req, res) => {
+router.post('/:id/posts', validateUserId, (req, res) => {
   // do your magic!
 });
 
 router.get('/', (req, res) => {
+  Users.get().then(response => res.status(200).json(response))
+  .catch(error => res.status(500).json({ errorMessage: "Could not access data"}))
+});
+
+router.get('/:id', validateUserId, (req, res) => {
   // do your magic!
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id/posts', validateUserId, (req, res) => {
   // do your magic!
 });
 
-router.get('/:id/posts', (req, res) => {
+router.delete('/:id', validateUserId, (req, res) => {
   // do your magic!
 });
 
-router.delete('/:id', (req, res) => {
-  // do your magic!
-});
-
-router.put('/:id', (req, res) => {
+router.put('/:id', validateUserId, (req, res) => {
   // do your magic!
 });
 
 //custom middleware
 
 function validateUserId(req, res, next) {
-  // do your magic!
+  Blogs.getById(req.params.id).then(response => {
+    if (response) next();
+    else res.status(404).json( { errorMessage: `Could not find user with id ${req.params.id}`})
+  })
+  .catch(error => res.status(500).json({ errorMessage: "Could not access data" }))
 }
 
 function validateUser(req, res, next) {

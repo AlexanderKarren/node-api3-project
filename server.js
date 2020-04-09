@@ -1,9 +1,15 @@
 const express = require('express');
 
 const postRouter = require('./posts/postRouter.js');
+const userRouter = require('./users/userRouter.js')
 
 const server = express();
+
 server.use(logger);
+
+server.use(express.json()); // built-in middleware
+
+server.use('/api/users', userRouter);
 server.use('/api/posts', postRouter);
 
 server.get('/', (req, res) => {
@@ -11,7 +17,7 @@ server.get('/', (req, res) => {
 });
 
 function logger(req, res, next) {
-  console.log(`${req.method} qequest to ${req.originalUrl} on ${Date()}`)
+  console.log(`${req.method} request to ${req.originalUrl} on ${Date()}`)
   next();
 }
 
